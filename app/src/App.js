@@ -30,8 +30,9 @@ function App() {
 	async function newContract() {
 		const beneficiary = document.getElementById('beneficiary').value;
 		const arbiter = document.getElementById('arbiter').value;
-		const value = ethers.BigNumber.from(document.getElementById('wei').value);
+		const value = Number(document.getElementById('wei').value) * (Math.pow(10, 18));
 		const escrowContract = await deploy(signer, arbiter, beneficiary, value);
+		
 
 
 		const escrow = {
@@ -60,17 +61,21 @@ function App() {
 				<h1> New Contract </h1>
 				<label>
 					Arbiter Address
-					<input readOnly type="text" id="arbiter" value="0xbDA5747bFD65F08deb54cb465eB87D40e51B197E" />
+					<input readOnly type="text" id="arbiter" value="0xB68BadBdb06a5cf52E9F760A2633accC3a3f02BE" />
+					{/* value="0xB68BadBdb06a5cf52E9F760A2633accC3a3f02BE" sepolia */}
+					{/* value="0xbDA5747bFD65F08deb54cb465eB87D40e51B197E" localnetwork */}
 				</label>
 
 				<label>
 					Beneficiary Address
-					<input readOnly type="text" id="beneficiary" value="0xdD2FD4581271e230360230F9337D5c0430Bf44C0" />
+					<input readOnly type="text" id="beneficiary"  value="0xAFcB0DcBefB0CEd92BBC050E299d20adC544E486"/>
+					{/* value="0xdD2FD4581271e230360230F9337D5c0430Bf44C0" = localnet */}
+					{/* value="0xAFcB0DcBefB0CEd92BBC050E299d20adC544E486" = sepolia */}
 				</label>
 
 				<label>
 					Deposit Amount (in Wei)
-					<input readOnly type="text" id="wei" value="1000000000000000000" />
+					<input readOnly type="text" id="wei" value="0.001" />
 				</label>
 
 				<div

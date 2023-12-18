@@ -6,7 +6,7 @@ module.exports = {
 	paths: {
 		artifacts: "./app/src/artifacts",
 	},
-	defaultNetwork: "hardhat",
+	defaultNetwork: "sepolia",
 	networks: {
 		hardhat: {
 			chainId: 31337,
@@ -17,4 +17,3 @@ module.exports = {
 		}
 	}
 }
-};
