@@ -11,9 +11,9 @@ module.exports = {
 		hardhat: {
 			chainId: 31337,
 		},
-		// sepolia: {
-		// 	url: process.env.SEPOLIA_URL,
-		// 	accounts: [process.env.PRIVATE_KEY]
-		// }
+		sepolia: {
+			url: process.env.SEPOLIA_URL,
+			accounts: [process.env.PRIVATE_KEY]
+		}
 	}
 }

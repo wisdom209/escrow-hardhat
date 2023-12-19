@@ -20,16 +20,26 @@ function App() {
 	const [escrows, setEscrows] = useState([]);
 	const [account, setAccount] = useState();
 	const [signer, setSigner] = useState();
+	const [doneTx, setDoneTx] = useState([]);
 
 	useEffect(() => {
-		async function getAccounts() {
-			const accounts = await provider.send('eth_requestAccounts', []);
+		try {
+			async function getAccounts() {
+				const accounts = await provider.send('eth_requestAccounts', []);
+				setAccount(accounts[0]);
+				setSigner(provider.getSigner());
+			}
 
-			setAccount(accounts[0]);
-			setSigner(provider.getSigner());
+			localStorage.clear();
+			getAccounts();
+
+			let rowData = localStorage.getItem("data");
+			if (rowData)
+				setDoneTx(JSON.parse(rowData));
+		} catch (error) {
+			alert(error.message)
 		}
 
-		getAccounts();
 	}, [account]);
 
 	async function newContract() {
@@ -39,73 +49,94 @@ function App() {
 		const escrowContract = await deploy(signer, arbiter, beneficiary, value);
 
 
-
 		const escrow = {
+			approved: false,
 			address: escrowContract.address,
 			arbiter,
 			beneficiary,
 			value: value.toString(),
 			handleApprove: async () => {
-				escrowContract.on('Approved', () => {
-					document.getElementById(escrowContract.address).className =
-						'complete';
-					document.getElementById(escrowContract.address).innerText =
-						"✓ It's been approved!";
-				});
+				try {
+					escrowContract.on('Approved', () => {
+						document.getElementById(escrowContract.address).className =
+							'complete';
+						document.getElementById(escrowContract.address).innerText =
+							"✓ It's been approved!";
+						setDoneTx([...doneTx, { address: escrowContract.address, arbiter, value }])
+						localStorage.setItem("data", JSON.stringify([...doneTx, { address: escrowContract.address, beneficiary, value, time: new Date() }]));
+					});
 
-				await approve(escrowContract, signer, arbiter);
+					await approve(escrowContract, signer, arbiter);
+					escrow.approved = true;
+				} catch (error) {
+					alert(error.message)
+				}
 			},
 		};
 
 		setEscrows([...escrows, escrow]);
+		localStorage.setItem("data", JSON.stringify(escrows));
 	}
 
 	return (
-		<main>
-			<div className="contract">
-				<h1> Contract </h1>
-				<label>
-					Arbiter Address
-					<input readOnly type="text" id="arbiter" value="0xbDA5747bFD65F08deb54cb465eB87D40e51B197E" />
-					{/* value="0xB68BadBdb06a5cf52E9F760A2633accC3a3f02BE" sepolia */}
-					{/* value="0xbDA5747bFD65F08deb54cb465eB87D40e51B197E" localnetwork */}
-				</label>
+		<div>
+			<main>
+				<div className="contract">
+					<h1> Contract </h1>
+					<label>
+						Arbiter Address
+						<input type="text" id="arbiter" />
+					</label>
 
-				<label>
-					Beneficiary Address
-					<input readOnly type="text" id="beneficiary" value="0xdD2FD4581271e230360230F9337D5c0430Bf44C0" />
-					{/* value="0xdD2FD4581271e230360230F9337D5c0430Bf44C0" = localnet */}
-					{/* value="0xAFcB0DcBefB0CEd92BBC050E299d20adC544E486" = sepolia */}
-				</label>
+					<label>
+						Beneficiary Address
+						<input type="text" id="beneficiary" />
+					</label>
 
-				<label>
-					Deposit Amount (in Eth)
-					<input type="text" id="wei" />
-				</label>
+					<label>
+						Deposit Amount (in Eth)
+						<input type="text" id="wei" />
+					</label>
 
-				<div
-					className="button"
-					id="deploy"
-					onClick={(e) => {
-						e.preventDefault();
+					<div
+						className="button"
+						id="deploy"
+						onClick={(e) => {
+							e.preventDefault();
+							newContract();
+						}}
+					>
+						Deploy
+					</div>
+				</div>
 
-						newContract();
-					}}
-				>
-					Deploy
+				<div className="existing-contracts">
+					<h1> Existing Contracts </h1>
+
+					<div id="container">
+						{escrows.map((escrow) => {
+							return <Escrow key={escrow.address} {...escrow} />;
+						})}
+					</div>
+				</div>
+			</main>
+			<div className='details'>
+				<h2 style={{ color: 'white' }}>Previous Transactions</h2>
+				<div>
+					{doneTx.map((v, i) =>
+						<details>
+							<summary>Transaction {i + 1} {v.time}</summary>
+							<ul key={i}>
+								<li>FROM: {v.address}</li>
+								<li>TO: {v.beneficiary}</li>
+								<li>VALUE: {utils.formatEther(v.value)} ETH</li>
+							</ul>
+						</details>)
+					}
 				</div>
 			</div>
+		</div>
 
-			<div className="existing-contracts">
-				<h1> Existing Contracts </h1>
-
-				<div id="container">
-					{escrows.map((escrow) => {
-						return <Escrow key={escrow.address} {...escrow} />;
-					})}
-				</div>
-			</div>
-		</main>
 	);
 }
 

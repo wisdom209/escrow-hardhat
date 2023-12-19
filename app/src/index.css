@@ -4,29 +4,22 @@ body {
 	font-family: 'monospace', sans-serif;
 }
 
-main {
+/* main {
 	display: flex;
 	width: 100vw;
+	flex-wrap: wrap;
+	margin: 20px;
 }
 
-.contract {
-	flex: 1;
-}
-
-.existing-contract {
-	flex: 2
-}
-
-@media (max-width: 758px) {
-	.existing-contract {
-		flex: 1;
-	}
-}
-
+.details {
+	width: 85vw;
+} */
 .contract,
-.existing-contracts {
+.existing-contracts, details {
+	width: 88vw;
 	margin: 20px;
 	border-radius: 2%;
+	display: inline-block;
 	padding: 40px;
 	border: 1px solid #ddd;
 	background-color: #fff;
