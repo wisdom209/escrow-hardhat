@@ -1,3 +1,5 @@
+import { utils } from "ethers";
+
 export default function Escrow({
   address,
   arbiter,
@@ -18,7 +20,7 @@ export default function Escrow({
         </li>
         <li>
           <div> Value </div>
-          <div> {value} </div>
+          <div> {value / Math.pow(10, 18)} ETH</div>
         </li>
         <div
           className="button"

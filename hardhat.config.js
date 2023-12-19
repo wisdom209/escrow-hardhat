@@ -6,14 +6,14 @@ module.exports = {
 	paths: {
 		artifacts: "./app/src/artifacts",
 	},
-	defaultNetwork: "sepolia",
+	defaultNetwork: "hardhat",
 	networks: {
 		hardhat: {
 			chainId: 31337,
 		},
-		sepolia: {
-			url: process.env.SEPOLIA_URL,
-			accounts: [process.env.PRIVATE_KEY]
-		}
+		// sepolia: {
+		// 	url: process.env.SEPOLIA_URL,
+		// 	accounts: [process.env.PRIVATE_KEY]
+		// }
 	}
 }
